@@ -1,0 +1,34 @@
+{
+  "name": "tuaa-downloader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "devDependencies": {
+    "electron": "^9.4.4",
+    "electron-builder": "^22.10.5"
+  },
+  "author": {
+    "name": "The Unus Annus Archive",
+    "email": "contact@unusannusarchive.tk",
+    "url": "https://www.unusannusarchive.tk"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "electron-progressbar": "^2.0.0",
+    "nodejs-file-downloader": "^4.4.2"
+  },
+  "build": {
+    "productName": "The Unus Annus Archive Downloader",
+    "appId": "tk.unusannusarchive.TUAA-Downloader",
+    "mac": {
+      "target": ["zip"]
+    },
+    "win": {
+      "target": ["portable"]
+    },
+    "linux": {
+      "target": ["AppImage"]
+    }
+  }
+}

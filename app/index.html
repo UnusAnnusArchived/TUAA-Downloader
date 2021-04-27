@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>The Unus Annus Archive Downloader</title>
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+  <body>
+    <div class="list">
+      <div class="listkey">
+        <input id="toggleallchecks" type="checkbox" onclick="toggleAll()" />
+        <p>Title</p>
+        <p>Season</p>
+        <p>Episode</p>
+        <p>ID</p>
+      </div>
+      <div id="listitems" class="listitems">
+        <div id="loading" class="listitem">
+          <p></p>
+          <p>Loading...</p>
+        </div>
+        <template id="listtemplate">
+          <div class="listitem">
+            <input class="episodecheckbox" type="checkbox" />
+            <p id="title"></p>
+            <p id="season"></p>
+            <p id="episode"></p>
+            <p id="id"></p>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <!-- TODO: add options to also download the thumbnail, metadata, description, etc -->
+      <div class="options">
+        <p>Download Videos <input id="videos" type="checkbox" checked />
+          <p>Download Thumbnails <input id="thumbnails" type="checkbox" /></p>
+          <p>Download Description <input id="description" type="checkbox" /></p>
+          <p>Download Metadata <input id="metadata" type="checkbox" /></p>
+          <p>Download Subs (if they exist) <input id="subs" type="checkbox" /></p>
+          <p>Use Video IDs instead of Video Titles <input id="useids" type="checkbox" />
+          </div>
+      <button id="change-path">Change Output Path</button><br />
+      <span id="download-path"></span><br />
+      <br />
+      <button id="download">Start Download</button>
+    </div>
+
+    <script src="js/changePath.js"></script>
+    <script src="js/metadata.js"></script>
+    <script src="js/checkboxes.js"></script>
+    <script src="js/download.js"></script>
+
+  </body>
+</html>
