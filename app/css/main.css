@@ -4,7 +4,7 @@
   font-family: arial;
 
   /* Variables */
-  --grid-size: 96px calc(100% - 384px) 96px 96px 96px;
+  --grid-size: 96px calc(100% - 504px) 120px 96px 96px 96px;
 }
 
 .list {

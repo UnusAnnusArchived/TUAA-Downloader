@@ -14,7 +14,6 @@ async function startDownload() {
   const getDescription = document.getElementById('description').checked
   const getMetadata = document.getElementById('metadata').checked
   const getSubs = document.getElementById('subs').checked
-  const useIDs = document.getElementById('useids').checked
   
   if (queue.length == 0) {
     return alert('Please select at least one video!')
@@ -29,10 +28,7 @@ async function startDownload() {
 
     const metadata = (await axios.get(`${apiURL}/v2/metadata/video/episode/${id}`)).data
 
-    var filename = metadata.title
-    if (useIDs) {
-      filename = id
-    }
+    var filename = document.getElementById('filename').value.replace(/{title}/g, metadata.title).replace(/{season}/g, metadata.season.toString().padStart(2, '0')).replace(/{episode}/g, metadata.episode.toString().padStart(3, '0')).replace(/{id}/g, `s${metadata.season.toString().padStart(2, '0')}.e${metadata.episode.toString().padStart(3, '0')}`)
 
     if (getVideo) {
       const videoProgress = new ProgressBar({
@@ -42,7 +38,7 @@ async function startDownload() {
         maxValue: 100
       })
       const videoDownload = new Downloader({
-        url: 'https:' + metadata.sources[0].src,
+        url: 'https:' + metadata.sources?.[0].src || metadata.video,
         directory: `${dir}/Videos/${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`,
         filename: `${filename}.mp4`,
         onProgress: (percent) => {
@@ -65,7 +61,7 @@ async function startDownload() {
         maxValue: 100
       })
       const thumbnailDownload = new Downloader({
-        url: 'https:' + metadata.posters[1].src,
+        url: 'https:' + metadata.posters?.[1].src || metadata.thumbnail,
         directory: `${dir}/Thumbnails/${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`,
         filename: `${filename}.jpg`,
         onProgress: (percent) => {
@@ -109,7 +105,7 @@ async function startDownload() {
       metadataProgress.text = '100%'
     }
     if (getSubs) {
-      for (var s = 0; s < metadata.tracks.length; s++) {
+      for (var s = 0; s < metadata.tracks?.length || 0; s++) {
         if (metadata.tracks[s].kind == 'captions') {
           const subProgress = new ProgressBar({
             indeterminate: false,

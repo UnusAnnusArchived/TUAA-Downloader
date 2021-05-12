@@ -6,8 +6,8 @@ app.on('ready', () => {
   mainWindow = new BrowserWindow({
     width: 1280,
     minWidth: 460,
-    height: 720,
-    minHeight: 720,
+    height: 800,
+    minHeight: 800,
     title: 'The Unus Annus Archive Downloader',
     fullscreenable: true,
     resizable: true,
