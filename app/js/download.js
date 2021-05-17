@@ -28,6 +28,8 @@ async function startDownload() {
 
     const metadata = (await axios.get(`${apiURL}/v2/metadata/video/episode/${id}`)).data
 
+    metadata.title = metadata.title.replace(/w\//gi, 'with').replace(/\//g, '').replace(/</g, '').replace(/>/g, '').replace(/:/g, ' -').replace(/"/g, '\'').replace(/\\/g, '').replace(/\|/g, 'l').replace(/\?/g, '').replace(/\*/g, '')
+
     var filename = document.getElementById('filename').value.replace(/{title}/g, metadata.title).replace(/{season}/g, metadata.season.toString().padStart(2, '0')).replace(/{episode}/g, metadata.episode.toString().padStart(3, '0')).replace(/{id}/g, `s${metadata.season.toString().padStart(2, '0')}.e${metadata.episode.toString().padStart(3, '0')}`)
 
     if (getVideo) {
