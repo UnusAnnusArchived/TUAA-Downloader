@@ -1,7 +1,7 @@
 {
   "name": "tuaa-downloader",
   "productName": "The Unus Annus Archive Downloader",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "src/main.js",
   "devDependencies": {
@@ -23,6 +23,7 @@
   "build": {
     "productName": "The Unus Annus Archive Downloader",
     "appId": "tk.unusannusarchive.TUAA-Downloader",
+    "artifactName": "${productName}.${ext}",
     "win": {
       "target": [
         "portable"

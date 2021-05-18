@@ -1,6 +1,6 @@
 const axios = remote.require('axios')
 
-const apiURL = 'https://unusannusarchive.tk/api'
+const apiURL = 'https://unusann.us/api'
 
 async function loadMetadata() {
   var metadata = (await axios.get(`${apiURL}/v2/metadata/video/all`)).data
@@ -19,15 +19,16 @@ async function loadMetadata() {
 
     listitems.appendChild(template)
   }
-  //Do filesizes seperately so it doesn't take forever to fetch each file
-
+  
   initCheckboxes()
   
+  //Do filesizes seperately so it doesn't take forever to fetch each item
   {
+    //(new context so we can have a new listitems constant)
     const listitems = document.getElementsByClassName('listitem')
     for (var i = 0; i < listitems.length; i++) {
       const metadata = JSON.parse(listitems[i].getAttribute('data-metadata'))
-      const filesizeUrl = 'https://cdn.unusannusarchive.tk/filesize.php?path='
+      const filesizeUrl = 'https://cdn.unusann.us/filesize.php?path='
       var filesize
       if (metadata.sources) {
         //V2 metadata

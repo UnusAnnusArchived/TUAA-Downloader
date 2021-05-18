@@ -40,7 +40,7 @@ async function startDownload() {
         maxValue: 100
       })
       const videoDownload = new Downloader({
-        url: 'https:' + metadata.sources?.[0].src || metadata.video,
+        url: 'https:' + (metadata.sources?.[0].src || metadata.video),
         directory: `${dir}/Videos/${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`,
         filename: `${filename}.mp4`,
         onProgress: (percent) => {
@@ -63,7 +63,7 @@ async function startDownload() {
         maxValue: 100
       })
       const thumbnailDownload = new Downloader({
-        url: 'https:' + metadata.posters?.[1].src || metadata.thumbnail,
+        url: 'https:' + (metadata.posters?.[1].src || metadata.thumbnail),
         directory: `${dir}/Thumbnails/${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`,
         filename: `${filename}.jpg`,
         onProgress: (percent) => {
