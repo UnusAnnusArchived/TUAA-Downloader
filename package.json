@@ -5,6 +5,7 @@
   "description": "",
   "main": "src/main.js",
   "devDependencies": {
+    "asar": "^3.0.3",
     "electron": "^9.4.4",
     "electron-builder": "^22.10.5",
     "electron-packager": "^15.2.0"
@@ -24,6 +25,11 @@
     "productName": "The Unus Annus Archive Downloader",
     "appId": "tk.unusannusarchive.TUAA-Downloader",
     "artifactName": "${productName}.${ext}",
+    "mac": {
+      "target": [
+        "dmg"
+      ]
+    },
     "win": {
       "target": [
         "portable"
