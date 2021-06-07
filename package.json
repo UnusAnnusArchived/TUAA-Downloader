@@ -1,7 +1,7 @@
 {
   "name": "tuaa-downloader",
   "productName": "The Unus Annus Archive Downloader",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "src/main.js",
   "devDependencies": {

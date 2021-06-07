@@ -1,13 +1,13 @@
-const { app, BrowserWindow, Menu, shell } = require('electron')
+const { app, BrowserWindow, Menu, shell, screen } = require('electron')
 
 var mainWindow = null
 
 app.on('ready', () => {
   mainWindow = new BrowserWindow({
     width: 1280,
-    minWidth: 460,
+    minWidth: isSmallScreen() ? undefined : 640,
     height: 800,
-    minHeight: 800,
+    minHeight: isSmallScreen() ? undefined : 800,
     title: 'The Unus Annus Archive Downloader',
     fullscreenable: true,
     resizable: true,
@@ -34,3 +34,15 @@ app.on('ready', () => {
     mainWindow = null
   })
 })
+
+function isSmallScreen() {
+  const screens = screen.getAllDisplays()
+  var isSmall = false
+  for (var i = 0; i < screens.length; i++) {
+    const { width, height } = screens[i].workAreaSize
+    if (width < 740 || height < 900) {
+      isSmall = true
+    }
+  }
+  return isSmall
+}
