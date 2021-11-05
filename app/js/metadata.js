@@ -1,9 +1,7 @@
-const axios = remote.require('axios')
-
 const apiURL = 'https://unusann.us/api'
 
 async function loadMetadata() {
-  var metadata = (await axios.get(`${apiURL}/v2/metadata/video/all`)).data
+  var metadata = (await fetch(`${apiURL}/v2/metadata/video/all`).then(res => res.json()))
   metadata = [...metadata[0], ...metadata[1]]
   document.getElementById('loading').remove()
 
@@ -32,10 +30,10 @@ async function loadMetadata() {
       var filesize
       if (metadata.sources) {
         //V2 metadata
-        filesize = (await axios.get(`${filesizeUrl}/${metadata.season.toString().padStart(2, '0')}/${metadata.episode.toString().padStart(3, '0')}/${metadata.sources[0].size}.mp4`)).data.filesize
+        filesize = (await fetch(`${filesizeUrl}/${metadata.season.toString().padStart(2, '0')}/${metadata.episode.toString().padStart(3, '0')}/${metadata.sources[0].size}.mp4`).then(res => res.json())).filesize
       } else {
         //V1 metadata
-        filesize = (await axios.get(`${filesizeUrl}/${metadata.season.toString().padStart(2, '0')}/${metadata.episode.toString().padStart(3, '0')}.mp4`)).data.filesize
+        filesize = (await fetch(`${filesizeUrl}/${metadata.season.toString().padStart(2, '0')}/${metadata.episode.toString().padStart(3, '0')}.mp4`).then(res => res.json())).filesize
       }
       listitems[i].querySelector('#filesize').innerText = Math.round(filesize.mb*100)/100 + ' MB'
     }
