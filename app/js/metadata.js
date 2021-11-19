@@ -1,7 +1,7 @@
-const apiURL = 'https://unusann.us/api'
+const apiURL = 'https://api.unusann.us'
 
 async function loadMetadata() {
-  var metadata = (await fetch(`${apiURL}/v2/metadata/video/all`).then(res => res.json()))
+  var metadata = (await fetch(`${apiURL}/v2/metadata/all`).then(res => res.json()))
   metadata = [...metadata[0], ...metadata[1]]
   document.getElementById('loading').remove()
 

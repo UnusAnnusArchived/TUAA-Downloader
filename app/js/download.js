@@ -26,7 +26,7 @@ async function startDownload() {
   for (var i = 0; i < queue.length; i++) {
     const id = queue[i]
 
-    const metadata = (await fetch(`${apiURL}/v2/metadata/video/episode/${id}`).then(res => res.json()))
+    const metadata = (await fetch(`${apiURL}/v2/metadata/episode/${id}`).then(res => res.json()))
 
     metadata.title = metadata.title.replace(/w\//gi, 'with').replace(/\//g, '').replace(/</g, '').replace(/>/g, '').replace(/:/g, ' -').replace(/"/g, '\'').replace(/\\/g, '').replace(/\|/g, 'l').replace(/\?/g, '').replace(/\*/g, '')
 
