@@ -14,6 +14,7 @@ async function startDownload() {
   const getDescription = document.getElementById('description').checked
   const getMetadata = document.getElementById('metadata').checked
   const getSubs = document.getElementById('subs').checked
+  const getSkipExisting = document.getElementById('skipExisting').checked
   
   if (queue.length == 0) {
     return alert('Please select at least one video!')
@@ -32,103 +33,149 @@ async function startDownload() {
 
     var filename = document.getElementById('filename').value.replace(/{title}/g, metadata.title).replace(/{season}/g, metadata.season.toString().padStart(2, '0')).replace(/{episode}/g, metadata.episode.toString().padStart(3, '0')).replace(/{id}/g, `s${metadata.season.toString().padStart(2, '0')}.e${metadata.episode.toString().padStart(3, '0')}`)
 
+    var subFolder = `${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`
     if (getVideo) {
-      const videoProgress = new ProgressBar({
-        indeterminate: false,
-        text: '0%',
-        detail: `Working on "${metadata.title}"<br />Video`,
-        maxValue: 100
-      })
-      const videoDownload = new Downloader({
-        url: 'https:' + (metadata.sources?.[0].src || metadata.video),
-        directory: `${dir}/Videos/${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`,
-        filename: `${filename}.mp4`,
-        onProgress: (percent) => {
-          videoProgress.value = parseFloat(percent)
-          videoProgress.text = `${percent}%`
+      var fileType = '.mp4'
+      var type = 'Videos'
+      var fullPath = `${dir}/${type}/${subFolder}${filename}${fileType}`
+
+      // skip if file already exists
+      if (getSkipExisting && await fs.existsSync(fullPath)) {
+        console.log(`Skipping: ${filename}${fileType}`)
+      } else {
+        const videoProgress = new ProgressBar({
+          indeterminate: false,
+          text: '0%',
+          detail: `Working on "${metadata.title}"<br />Video`,
+          maxValue: 100
+        })
+        const videoDownload = new Downloader({
+          url: 'https:' + (metadata.sources?.[0].src || metadata.video),
+          directory: `${dir}/${type}/${subFolder}`,
+          filename: `${filename}${fileType}`,
+          onProgress: (percent) => {
+            videoProgress.value = parseFloat(percent)
+            videoProgress.text = `${percent}%`
+          }
+        })
+        try {
+          await videoDownload.download()
+        } catch (err) {
+          console.log(err)
+          alert(err)
         }
-      })
-      try {
-        await videoDownload.download()
-      } catch (err) {
-        console.log(err)
-        alert(err)
       }
     }
     if (getThumbnail) {
-      const thumbnailProgress = new ProgressBar({
-        indeterminate: false,
-        text: '0%',
-        detail: `Working on "${metadata.title}"<br />Thumbnail`,
-        maxValue: 100
-      })
-      const thumbnailDownload = new Downloader({
-        url: 'https:' + (metadata.posters?.[1].src || metadata.thumbnail),
-        directory: `${dir}/Thumbnails/${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`,
-        filename: `${filename}.jpg`,
-        onProgress: (percent) => {
-          thumbnailProgress.value = parseFloat(percent)
-          thumbnailProgress.text = `${percent}%`
+      var fileType = '.jpg'
+      var type = 'Thumbnails'
+      var fullPath = `${dir}/${type}/${subFolder}${filename}${fileType}`
+
+      // skip if file already exists
+      if (getSkipExisting && await fs.existsSync(`${dir}/${type}/${subFolder}${filename}${fileType}`)) {
+        console.log(`Skipping: ${filename}${fileType}`)
+      } else {
+        const thumbnailProgress = new ProgressBar({
+          indeterminate: false,
+          text: '0%',
+          detail: `Working on "${metadata.title}"<br />Thumbnail`,
+          maxValue: 100
+        })
+        const thumbnailDownload = new Downloader({
+          url: 'https:' + (metadata.posters?.[1].src || metadata.thumbnail),
+          directory: `${dir}/${type}/${subFolder}`,
+          filename: `${filename}${fileType}`,
+          onProgress: (percent) => {
+            thumbnailProgress.value = parseFloat(percent)
+            thumbnailProgress.text = `${percent}%`
+          }
+        })
+        try {
+          await thumbnailDownload.download()
+        } catch (err) {
+          console.log(err)
+          alert(err)
         }
-      })
-      try {
-        await thumbnailDownload.download()
-      } catch (err) {
-        console.log(err)
-        alert(err)
       }
     }
     if (getDescription) {
-      const descriptionProgress = new ProgressBar({
-        indeterminate: false,
-        text: '0%',
-        detail: `Working on "${metadata.title}"<br />Description`,
-        maxValue: 100
-      })
-      if (!fs.existsSync(`${dir}/Descriptions/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/`)) {
-        fs.mkdirSync(`${dir}/Descriptions/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/`, { recursive: true })
-      }
-      fs.writeFileSync(`${dir}/Descriptions/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/${filename}.txt`, metadata.description)
-      descriptionProgress.value = 100
-      descriptionProgress.text = '100%'
+      var fileType = '.txt'
+      var type = 'Descriptions'
+      var fullPath = `${dir}/${type}/${subFolder}${filename}${fileType}`
+
+      // skip if file already exists
+      if (getSkipExisting && await fs.existsSync(`${dir}/${type}/${subFolder}${filename}${fileType}`)) {
+        console.log(`Skipping: ${filename}${fileType}`)
+      } else {
+        const descriptionProgress = new ProgressBar({
+          indeterminate: false,
+          text: '0%',
+          detail: `Working on "${metadata.title}"<br />Description`,
+          maxValue: 100
+        })
+        if (!fs.existsSync(`${dir}/${type}/${subFolder}`)) {
+          fs.mkdirSync(`${dir}/${type}/${subFolder}`, { recursive: true })
+        }
+        fs.writeFileSync(`${dir}/${type}/${subFolder}${filename}${fileType}`, metadata.description)
+        descriptionProgress.value = 100
+        descriptionProgress.text = '100%'
+      }   
     }
     if (getMetadata) {
-      const metadataProgress = new ProgressBar({
-        indeterminate: false,
-        text: '0%',
-        detail: `Working on "${metadata.title}"<br />Metadata`,
-        maxValue: 100
-      })
-      if (!fs.existsSync(`${dir}/Metadata/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/`)) {
-        fs.mkdirSync(`${dir}/Metadata/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/`, { recursive: true })
+      var fileType = '.json'
+      var type = 'Metadata'
+      var fullPath = `${dir}/${type}/${subFolder}${filename}${fileType}`
+
+      // skip if file already exists
+      if (getSkipExisting && await fs.existsSync(`${dir}/${type}/${subFolder}${filename}${fileType}`)) {
+        console.log(`Skipping: ${filename}${fileType}`)
+      } else {
+        const metadataProgress = new ProgressBar({
+          indeterminate: false,
+          text: '0%',
+          detail: `Working on "${metadata.title}"<br />Metadata`,
+          maxValue: 100
+        })
+        if (!fs.existsSync(`${dir}/${type}/${subFolder}`)) {
+          fs.mkdirSync(`${dir}/${type}/${subFolder}`, { recursive: true })
+        }
+        fs.writeFileSync(`${dir}/${type}/${subFolder}${filename}${fileType}`, JSON.stringify(metadata, null, 2))
+        metadataProgress.value = 100
+        metadataProgress.text = '100%'
       }
-      fs.writeFileSync(`${dir}/Metadata/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/${filename}.json`, JSON.stringify(metadata, null, 2))
-      metadataProgress.value = 100
-      metadataProgress.text = '100%'
     }
     if (getSubs) {
-      for (var s = 0; s < metadata.tracks?.length || 0; s++) {
-        if (metadata.tracks[s].kind == 'captions') {
-          const subProgress = new ProgressBar({
-            indeterminate: false,
-            text: '0%',
-            detail: `Working on "${metadata.title}"<br />Subtitles`,
-            maxValue: 100
-          })
-          const subDownload = new Downloader({
-            url: 'https:' + metadata.tracks[s].src,
-            directory: `${dir}/Subtitles/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/`,
-            filename: `${filename}.vtt`,
-            onProgress: (percent) => {
-              subProgress.value = parseFloat(percent)
-              subProgress.text = `${percent}%`
+      var fileType = '.vtt'
+      var type = 'Subtitles'
+      var fullPath = `${dir}/${type}/${subFolder}${filename}${fileType}`
+
+      // skip if file already exists
+      if (getSkipExisting && await fs.existsSync(`${dir}/${type}/${subFolder}${filename}${fileType}`)) {
+        console.log(`Skipping: ${filename}${fileType}`)
+      } else {
+        for (var s = 0; s < metadata.tracks?.length || 0; s++) {
+          if (metadata.tracks[s].kind == 'captions') {
+            const subProgress = new ProgressBar({
+              indeterminate: false,
+              text: '0%',
+              detail: `Working on "${metadata.title}"<br />Subtitles`,
+              maxValue: 100
+            })
+            const subDownload = new Downloader({
+              url: 'https:' + metadata.tracks[s].src,
+              directory: `${dir}/${type}/${subFolder}`,
+              filename: `${filename}${fileType}`,
+              onProgress: (percent) => {
+                subProgress.value = parseFloat(percent)
+                subProgress.text = `${percent}%`
+              }
+            })
+            try {
+              await subDownload.download()
+            } catch (err) {
+              console.log(err)
+              alert(err)
             }
-          })
-          try {
-            await subDownload.download()
-          } catch (err) {
-            console.log(err)
-            alert(err)
           }
         }
       }
