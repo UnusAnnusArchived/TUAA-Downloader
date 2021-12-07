@@ -34,12 +34,16 @@ async function startDownload() {
     var filename = document.getElementById('filename').value.replace(/{title}/g, metadata.title).replace(/{season}/g, metadata.season.toString().padStart(2, '0')).replace(/{episode}/g, metadata.episode.toString().padStart(3, '0')).replace(/{id}/g, `s${metadata.season.toString().padStart(2, '0')}.e${metadata.episode.toString().padStart(3, '0')}`)
 
     var subFolder = `${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`
-    // skip if file already exists
-    if (getSkipExisting && await fs.existsSync(`${dir}/Videos/${subFolder}${filename}.mp4`)) {
-      console.log(`Skipping ${dir}/Videos/${subFolder}${filename}.mp4`)
-      continue
-    }
     if (getVideo) {
+      var fileType = '.mp4'
+      var type = 'Videos'
+      var fullPath = `${dir}/${type}/${subFolder}${filename}${fileType}`
+
+      // skip if file already exists
+      if (getSkipExisting && await fs.existsSync(fullPath)) {
+        console.log(`Skipping: ${filename}${fileType}`)
+        continue
+      }
       const videoProgress = new ProgressBar({
         indeterminate: false,
         text: '0%',
@@ -48,8 +52,8 @@ async function startDownload() {
       })
       const videoDownload = new Downloader({
         url: 'https:' + (metadata.sources?.[0].src || metadata.video),
-        directory: `${dir}/Videos/${subFolder}`,
-        filename: `${filename}.mp4`,
+        directory: `${dir}/${type}/${subFolder}`,
+        filename: `${filename}${fileType}`,
         onProgress: (percent) => {
           videoProgress.value = parseFloat(percent)
           videoProgress.text = `${percent}%`
@@ -63,6 +67,15 @@ async function startDownload() {
       }
     }
     if (getThumbnail) {
+      var fileType = '.jpg'
+      var type = 'Thumbnails'
+      var fullPath = `${dir}/${type}/${subFolder}${filename}${fileType}`
+
+      // skip if file already exists
+      if (getSkipExisting && await fs.existsSync(`${dir}/${type}/${subFolder}${filename}${fileType}`)) {
+        console.log(`Skipping: ${filename}${fileType}`)
+        continue
+      }
       const thumbnailProgress = new ProgressBar({
         indeterminate: false,
         text: '0%',
@@ -71,8 +84,8 @@ async function startDownload() {
       })
       const thumbnailDownload = new Downloader({
         url: 'https:' + (metadata.posters?.[1].src || metadata.thumbnail),
-        directory: `${dir}/Thumbnails/${subFolder}`,
-        filename: `${filename}.jpg`,
+        directory: `${dir}/${type}/${subFolder}`,
+        filename: `${filename}${fileType}`,
         onProgress: (percent) => {
           thumbnailProgress.value = parseFloat(percent)
           thumbnailProgress.text = `${percent}%`
@@ -86,34 +99,61 @@ async function startDownload() {
       }
     }
     if (getDescription) {
+      var fileType = '.txt'
+      var type = 'Descriptions'
+      var fullPath = `${dir}/${type}/${subFolder}${filename}${fileType}`
+
+      // skip if file already exists
+      if (getSkipExisting && await fs.existsSync(`${dir}/${type}/${subFolder}${filename}${fileType}`)) {
+        console.log(`Skipping: ${filename}${fileType}`)
+        continue
+      }
       const descriptionProgress = new ProgressBar({
         indeterminate: false,
         text: '0%',
         detail: `Working on "${metadata.title}"<br />Description`,
         maxValue: 100
       })
-      if (!fs.existsSync(`${dir}/Descriptions/${subFolder}`)) {
-        fs.mkdirSync(`${dir}/Descriptions/${subFolder}`, { recursive: true })
+      if (!fs.existsSync(`${dir}/${type}/${subFolder}`)) {
+        fs.mkdirSync(`${dir}/${type}/${subFolder}`, { recursive: true })
       }
-      fs.writeFileSync(`${dir}/Descriptions/${subFolder}${filename}.txt`, metadata.description)
+      fs.writeFileSync(`${dir}/${type}/${subFolder}${filename}${fileType}`, metadata.description)
       descriptionProgress.value = 100
       descriptionProgress.text = '100%'
     }
     if (getMetadata) {
+      var fileType = '.json'
+      var type = 'Metadata'
+      var fullPath = `${dir}/${type}/${subFolder}${filename}${fileType}`
+
+      // skip if file already exists
+      if (getSkipExisting && await fs.existsSync(`${dir}/${type}/${subFolder}${filename}${fileType}`)) {
+        console.log(`Skipping: ${filename}${fileType}`)
+        continue
+      }
       const metadataProgress = new ProgressBar({
         indeterminate: false,
         text: '0%',
         detail: `Working on "${metadata.title}"<br />Metadata`,
         maxValue: 100
       })
-      if (!fs.existsSync(`${dir}/Metadata/${subFolder}`)) {
-        fs.mkdirSync(`${dir}/Metadata/${subFolder}`, { recursive: true })
+      if (!fs.existsSync(`${dir}/${type}/${subFolder}`)) {
+        fs.mkdirSync(`${dir}/${type}/${subFolder}`, { recursive: true })
       }
-      fs.writeFileSync(`${dir}/Metadata/${subFolder}${filename}.json`, JSON.stringify(metadata, null, 2))
+      fs.writeFileSync(`${dir}/${type}/${subFolder}${filename}${fileType}`, JSON.stringify(metadata, null, 2))
       metadataProgress.value = 100
       metadataProgress.text = '100%'
     }
     if (getSubs) {
+      var fileType = '.vtt'
+      var type = 'Subtitles'
+      var fullPath = `${dir}/${type}/${subFolder}${filename}${fileType}`
+
+      // skip if file already exists
+      if (getSkipExisting && await fs.existsSync(`${dir}/${type}/${subFolder}${filename}${fileType}`)) {
+        console.log(`Skipping: ${filename}${fileType}`)
+        continue
+      }
       for (var s = 0; s < metadata.tracks?.length || 0; s++) {
         if (metadata.tracks[s].kind == 'captions') {
           const subProgress = new ProgressBar({
@@ -124,8 +164,8 @@ async function startDownload() {
           })
           const subDownload = new Downloader({
             url: 'https:' + metadata.tracks[s].src,
-            directory: `${dir}/Subtitles/${subFolder}`,
-            filename: `${filename}.vtt`,
+            directory: `${dir}/${type}/${subFolder}`,
+            filename: `${filename}${fileType}`,
             onProgress: (percent) => {
               subProgress.value = parseFloat(percent)
               subProgress.text = `${percent}%`
