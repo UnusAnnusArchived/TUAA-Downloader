@@ -14,6 +14,7 @@ async function startDownload() {
   const getDescription = document.getElementById('description').checked
   const getMetadata = document.getElementById('metadata').checked
   const getSubs = document.getElementById('subs').checked
+  const getSkipExisting = document.getElementById('skipExisting').checked
   
   if (queue.length == 0) {
     return alert('Please select at least one video!')
@@ -32,6 +33,12 @@ async function startDownload() {
 
     var filename = document.getElementById('filename').value.replace(/{title}/g, metadata.title).replace(/{season}/g, metadata.season.toString().padStart(2, '0')).replace(/{episode}/g, metadata.episode.toString().padStart(3, '0')).replace(/{id}/g, `s${metadata.season.toString().padStart(2, '0')}.e${metadata.episode.toString().padStart(3, '0')}`)
 
+    var subFolder = `${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`
+    // skip if file already exists
+    if (getSkipExisting && await fs.existsSync(`${dir}/Videos/${subFolder}${filename}.mp4`)) {
+      console.log(`Skipping ${dir}/Videos/${subFolder}${filename}.mp4`)
+      continue
+    }
     if (getVideo) {
       const videoProgress = new ProgressBar({
         indeterminate: false,
@@ -41,7 +48,7 @@ async function startDownload() {
       })
       const videoDownload = new Downloader({
         url: 'https:' + (metadata.sources?.[0].src || metadata.video),
-        directory: `${dir}/Videos/${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`,
+        directory: `${dir}/Videos/${subFolder}`,
         filename: `${filename}.mp4`,
         onProgress: (percent) => {
           videoProgress.value = parseFloat(percent)
@@ -64,7 +71,7 @@ async function startDownload() {
       })
       const thumbnailDownload = new Downloader({
         url: 'https:' + (metadata.posters?.[1].src || metadata.thumbnail),
-        directory: `${dir}/Thumbnails/${metadata.season == 0 ? 'Specials' : `Season ${metadata.season}`}/`,
+        directory: `${dir}/Thumbnails/${subFolder}`,
         filename: `${filename}.jpg`,
         onProgress: (percent) => {
           thumbnailProgress.value = parseFloat(percent)
@@ -85,10 +92,10 @@ async function startDownload() {
         detail: `Working on "${metadata.title}"<br />Description`,
         maxValue: 100
       })
-      if (!fs.existsSync(`${dir}/Descriptions/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/`)) {
-        fs.mkdirSync(`${dir}/Descriptions/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/`, { recursive: true })
+      if (!fs.existsSync(`${dir}/Descriptions/${subFolder}`)) {
+        fs.mkdirSync(`${dir}/Descriptions/${subFolder}`, { recursive: true })
       }
-      fs.writeFileSync(`${dir}/Descriptions/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/${filename}.txt`, metadata.description)
+      fs.writeFileSync(`${dir}/Descriptions/${subFolder}${filename}.txt`, metadata.description)
       descriptionProgress.value = 100
       descriptionProgress.text = '100%'
     }
@@ -99,10 +106,10 @@ async function startDownload() {
         detail: `Working on "${metadata.title}"<br />Metadata`,
         maxValue: 100
       })
-      if (!fs.existsSync(`${dir}/Metadata/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/`)) {
-        fs.mkdirSync(`${dir}/Metadata/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/`, { recursive: true })
+      if (!fs.existsSync(`${dir}/Metadata/${subFolder}`)) {
+        fs.mkdirSync(`${dir}/Metadata/${subFolder}`, { recursive: true })
       }
-      fs.writeFileSync(`${dir}/Metadata/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/${filename}.json`, JSON.stringify(metadata, null, 2))
+      fs.writeFileSync(`${dir}/Metadata/${subFolder}${filename}.json`, JSON.stringify(metadata, null, 2))
       metadataProgress.value = 100
       metadataProgress.text = '100%'
     }
@@ -117,7 +124,7 @@ async function startDownload() {
           })
           const subDownload = new Downloader({
             url: 'https:' + metadata.tracks[s].src,
-            directory: `${dir}/Subtitles/${metadata.season == 0 ? 'Specials': `Season ${metadata.season}`}/`,
+            directory: `${dir}/Subtitles/${subFolder}`,
             filename: `${filename}.vtt`,
             onProgress: (percent) => {
               subProgress.value = parseFloat(percent)
