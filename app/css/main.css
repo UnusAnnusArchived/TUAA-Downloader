@@ -50,13 +50,48 @@
   margin: 0;
 }
 
-
-.bottom {
+.bottom_left {
   position: absolute;
   bottom: 0px;
-  left: 0px;
-  right: 0px;
+  left: 16px;
   top: 50%;
+  width: calc(50% - 16px);
   text-align: center;
   margin-top: 10px;
+}
+
+.bottom_right {
+  position: absolute;
+  bottom: 0px;
+  left: calc(50% + 16px);
+  top: 50%;
+  width: calc(50% - 33px);
+  text-align: left;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 10px;
+}
+
+.options > p, .with-border {
+  border-style: solid;
+  border-color: #ccc;
+  border-radius: 10px;
+}
+
+.log {
+  text-align: left;
+  overflow-y: auto;
+  height: calc(100% - 18px - 16px - 16px); 
+}
+
+div label input {
+  margin-right:100px;
+}
+body {
+   font-family:sans-serif;
 }
