@@ -1,7 +1,16 @@
+const { exists } = require("original-fs")
+
 const apiURL = 'https://api.unusann.us'
 
 async function loadMetadata() {
-  var metadata = (await fetch(`${apiURL}/v2/metadata/all`).then(res => res.json()))
+  var metadata
+  
+  try {
+    metadata = (await fetch(`${apiURL}/v2/metadata/all`).then(res => res.json()))
+  } catch(err) {
+    alert(err)
+  }
+   
   metadata = [...metadata[0], ...metadata[1]]
   document.getElementById('loading').remove()
 
@@ -28,14 +37,20 @@ async function loadMetadata() {
       const metadata = JSON.parse(listitems[i].getAttribute('data-metadata'))
       const filesizeUrl = 'https://cdn.unusann.us/filesize.php?path='
       var filesize
-      if (metadata.sources) {
-        //V2 metadata
-        filesize = (await fetch(`${filesizeUrl}/${metadata.season.toString().padStart(2, '0')}/${metadata.episode.toString().padStart(3, '0')}/${metadata.sources[0].size}.mp4`).then(res => res.json())).filesize
-      } else {
-        //V1 metadata
-        filesize = (await fetch(`${filesizeUrl}/${metadata.season.toString().padStart(2, '0')}/${metadata.episode.toString().padStart(3, '0')}.mp4`).then(res => res.json())).filesize
+
+      try {
+        if (metadata.sources) {
+          //V2 metadata
+          filesize = (await fetch(`${filesizeUrl}/${metadata.season.toString().padStart(2, '0')}/${metadata.episode.toString().padStart(3, '0')}/${metadata.sources[0].size}.mp4`).then(res => res.json())).filesize
+        } else {
+          //V1 metadata
+          filesize = (await fetch(`${filesizeUrl}/${metadata.season.toString().padStart(2, '0')}/${metadata.episode.toString().padStart(3, '0')}.mp4`).then(res => res.json())).filesize
+        }
+
+        listitems[i].querySelector('#filesize').innerText = Math.round(filesize.mb*100)/100 + ' MB'
+      } catch(err) {
+        alert(err)
       }
-      listitems[i].querySelector('#filesize').innerText = Math.round(filesize.mb*100)/100 + ' MB'
     }
   }
 }

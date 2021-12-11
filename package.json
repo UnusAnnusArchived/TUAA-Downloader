@@ -19,7 +19,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "electron-progressbar": "^2.0.0",
-    "nodejs-file-downloader": "^4.4.2"
+    "nodejs-file-downloader": "^4.8.1"
   },
   "build": {
     "productName": "The Unus Annus Archive Downloader",

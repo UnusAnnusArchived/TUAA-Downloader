@@ -32,21 +32,28 @@
       </div>
     </div>
 
-    <div class="bottom">
+    <div class="bottom_left">
       <!-- TODO: add options to also download the thumbnail, metadata, description, etc -->
+      <p>Options</p>
       <div class="options">
-        <p>Download Videos <input id="videos" type="checkbox" checked /></p>
-        <p>Download Thumbnails <input id="thumbnails" type="checkbox" /></p>
-        <p>Download Description <input id="description" type="checkbox" /></p>
-        <p>Download Metadata <input id="metadata" type="checkbox" /></p>
-        <p>Download Subs (if they exist) <input id="subs" type="checkbox" /></p>
-        <p>Skip file if already present<input id="skipExisting" type="checkbox" /></p>
-        <p>Filename <input id="filename" type="text" placeholder="{title}" value="{title}" /><br />{title} = Title, {season} = Season, {episode} = Episode, {id} = ID<br />(DO NOT INCLUDE FILE EXTENSION)</p>
+        <p>Download Videos</br> <input id="videos" type="checkbox" checked /></p>
+        <p>Download Thumbnails</br> <input id="thumbnails" type="checkbox" /></p>
+        <p>Download Description</br> <input id="description" type="checkbox" /></p>
+        <p>Download Metadata</br> <input id="metadata" type="checkbox" /></p>
+        <p>Download Subs (if they exist)</br> <input id="subs" type="checkbox" /></p>
+        <p>Skip file if already present</br> <input class="test" id="skipExisting" type="checkbox" checked="true" /></p>
       </div>
+      <p>Filename <input id="filename" type="text" placeholder="{episode} {title}" value="{episode} {title}" /><br />{title} = Title, {season} = Season, {episode} = Episode, {id} = ID<br />(DO NOT INCLUDE FILE EXTENSION)</p>
       <button id="change-path">Change Output Path</button><br />
       <span id="download-path"></span><br />
       <br />
       <button id="download">Start Download</button>
+      <button id="cancel">Cancel Download</button>
+    </div>
+
+    <div class="bottom_right">
+      <p style="text-align: center;">Output</p>
+      <div id="log" class="log with-border">
     </div>
 
     <script src="js/changePath.js"></script>
